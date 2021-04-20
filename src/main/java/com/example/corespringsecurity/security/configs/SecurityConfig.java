@@ -1,6 +1,8 @@
 package com.example.corespringsecurity.security.configs;
 
 import com.example.corespringsecurity.provider.CustomAuthenticationProvider;
+import com.example.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.example.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import com.example.corespringsecurity.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +14,12 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 import javax.sql.DataSource;
 
@@ -22,10 +28,11 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final PasswordEncoder encoder;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomAuthenticationProvider authenticationProvider;
     private final DataSource dataSource;
+    private final FormAuthenticationDetailsSource authenticationDetailsSource;
+    private final CustomAuthenticationSuccessHandler successHandler;
 
     @Bean
     public PersistentTokenRepository tokenRepository() {
@@ -50,7 +57,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
+                .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")
+                /* successHandler 는 defaultSuccessUrl 밑에 있어야 한다. */
+                .successHandler(successHandler)
+//                .successHandler((request, response, authentication) -> {
+//                    RequestCache requestCache = new HttpSessionRequestCache();
+//                    SavedRequest savedRequest = requestCache.getRequest(request, response);
+//
+//                    new DefaultRedirectStrategy()
+//                            .sendRedirect(request, response,
+//                                    savedRequest != null ? savedRequest.getRedirectUrl() :  "/");
+//
+//                })
                 /* 로그인 페이지, 로그인 처리 페이지, 로그인 성공 후 페이지는 permitAll 을 주어서 인증되지 않은 사용자도 접근 허용 */
                 .permitAll()
 
