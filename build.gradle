@@ -27,6 +27,12 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "org.springframework.security:spring-security-test"
     implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity5"
+
+    // KAFKA 추가
+    implementation 'org.springframework.kafka:spring-kafka:'
+
+    //Json Web Token
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 }
 
 test {
