@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Inheritance(strategy = InheritanceType.JOINED)
+
 @Entity @EntityListeners(AuditingEntityListener.class)
 @Getter @NoArgsConstructor @ToString(of = {"username", "password", "email", "age", "role"})
 public class Account {

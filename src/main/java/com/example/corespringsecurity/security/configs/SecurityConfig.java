@@ -1,15 +1,21 @@
 package com.example.corespringsecurity.security.configs;
 
-import com.example.corespringsecurity.security.service.CustomUserDetails;
+import com.example.corespringsecurity.provider.CustomAuthenticationProvider;
+import com.example.corespringsecurity.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 @EnableWebSecurity
 @Slf4j
@@ -17,17 +23,44 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder encoder;
-    private final CustomUserDetails customUserDetails;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAuthenticationProvider authenticationProvider;
+    private final DataSource dataSource;
+
+    @Bean
+    public PersistentTokenRepository tokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+    }
+
+
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/", "/users", "user/login/**").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
-//                .antMatchers("/config").hasRole("ADMIN")
-                .antMatchers("/").permitAll()
+                .antMatchers("/config").hasRole("ADMIN")
+                .anyRequest().authenticated()
+
+
                 .and()
-                .formLogin();
+                .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login_proc")
+                .defaultSuccessUrl("/")
+                /* 로그인 페이지, 로그인 처리 페이지, 로그인 성공 후 페이지는 permitAll 을 주어서 인증되지 않은 사용자도 접근 허용 */
+                .permitAll()
+
+
+                .and()
+                .rememberMe()
+                .rememberMeParameter("remember-me")
+                .userDetailsService(customUserDetailsService)
+                .tokenRepository(tokenRepository());
+
     }
 
 
@@ -39,7 +72,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetails)
-                .passwordEncoder(encoder);
+        /* 이미 CustomAuthenticationProvider 에서 사용하고 있으므로 굳이 추가 X */
+//        auth.userDetailsService(customUserDetailsService)
+//                .passwordEncoder(encoder);
+
+        auth.authenticationProvider(authenticationProvider);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class CustomUserDetails implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -29,4 +29,5 @@ public class CustomUserDetails implements UserDetailsService {
 
         return new AccountContext(account, roles);
     }
+
 }
