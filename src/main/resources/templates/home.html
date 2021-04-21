@@ -11,6 +11,9 @@
             </div>
         </nav>
         <div style="padding-top:50px;" class="col">
+            <div th:if="${success != null}" class="form-group">
+                <span th:text="${'로그인에 성공하셨습니다. ' + #temporals.format(#temporals.createNow(), 'yyyy-MM-dd hh:mm:ss EEE')}" class="alert alert-success"></span>
+            </div>
             <div class="container text-center">
                 <h1 class="text-primary">DASHBOARD</h1>
                 <div class="security"></div>

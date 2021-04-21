@@ -2,6 +2,7 @@ package com.example.corespringsecurity.security.configs;
 
 import com.example.corespringsecurity.provider.CustomAuthenticationProvider;
 import com.example.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.example.corespringsecurity.security.handler.CustomAuthenticationFailureHandler;
 import com.example.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import com.example.corespringsecurity.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 
 import javax.sql.DataSource;
 
@@ -32,7 +28,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAuthenticationProvider authenticationProvider;
     private final DataSource dataSource;
     private final FormAuthenticationDetailsSource authenticationDetailsSource;
+
+
     private final CustomAuthenticationSuccessHandler successHandler;
+    private final CustomAuthenticationFailureHandler failureHandler;
 
     @Bean
     public PersistentTokenRepository tokenRepository() {
@@ -46,7 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/", "/users", "user/login/**").permitAll()
+                                                        /* /login 경로 뒤에 *를 붙여 줘야 login 경로에 받는 파라미터 값 인식 가능   */
+                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -61,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/")
                 /* successHandler 는 defaultSuccessUrl 밑에 있어야 한다. */
                 .successHandler(successHandler)
+                .failureHandler(failureHandler)
 //                .successHandler((request, response, authentication) -> {
 //                    RequestCache requestCache = new HttpSessionRequestCache();
 //                    SavedRequest savedRequest = requestCache.getRequest(request, response);

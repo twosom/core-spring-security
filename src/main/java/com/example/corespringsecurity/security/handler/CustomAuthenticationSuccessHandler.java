@@ -20,6 +20,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private RequestCache requestCache = new HttpSessionRequestCache();
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
@@ -28,11 +29,15 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         setDefaultTargetUrl("/");
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+
+        request.getSession().setAttribute("success", true);
+
         redirectStrategy
-                .sendRedirect(
-                        request, response,
-                        savedRequest != null ? savedRequest.getRedirectUrl() : getDefaultTargetUrl()
-                );
+                .sendRedirect(request, response,
+                        savedRequest != null ?
+                                savedRequest.getRedirectUrl() : getDefaultTargetUrl());
+
 
     }
 }
