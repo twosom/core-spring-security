@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -31,7 +32,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 
 
-        request.getSession().setAttribute("success", true);
+        request.getSession().setAttribute("success", LocalDateTime.now());
 
         redirectStrategy
                 .sendRedirect(request, response,

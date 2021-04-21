@@ -2,6 +2,7 @@ package com.example.corespringsecurity.security.configs;
 
 import com.example.corespringsecurity.provider.CustomAuthenticationProvider;
 import com.example.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.example.corespringsecurity.security.handler.CustomAccessDeniedHandler;
 import com.example.corespringsecurity.security.handler.CustomAuthenticationFailureHandler;
 import com.example.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import com.example.corespringsecurity.security.service.CustomUserDetailsService;
@@ -33,6 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
 
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
     @Bean
     public PersistentTokenRepository tokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
@@ -51,9 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated()
-
-
-                .and()
+        .and()
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
@@ -62,20 +63,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 /* successHandler 는 defaultSuccessUrl 밑에 있어야 한다. */
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
-//                .successHandler((request, response, authentication) -> {
-//                    RequestCache requestCache = new HttpSessionRequestCache();
-//                    SavedRequest savedRequest = requestCache.getRequest(request, response);
-//
-//                    new DefaultRedirectStrategy()
-//                            .sendRedirect(request, response,
-//                                    savedRequest != null ? savedRequest.getRedirectUrl() :  "/");
-//
-//                })
                 /* 로그인 페이지, 로그인 처리 페이지, 로그인 성공 후 페이지는 permitAll 을 주어서 인증되지 않은 사용자도 접근 허용 */
                 .permitAll()
-
-
-                .and()
+        .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler)
+        .and()
                 .rememberMe()
                 .rememberMeParameter("remember-me")
                 .userDetailsService(customUserDetailsService)

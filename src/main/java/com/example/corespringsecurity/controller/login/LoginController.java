@@ -1,5 +1,6 @@
 package com.example.corespringsecurity.controller.login;
 
+import com.example.corespringsecurity.domain.Account;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -22,6 +23,10 @@ public class LoginController {
                         @RequestParam(value = "exception", required = false) String exception,
                         Model model) {
 
+        if (!SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+            return "redirect:/";
+        }
+
         model.addAttribute("error", error);
         model.addAttribute("exception", exception);
 
@@ -38,5 +43,24 @@ public class LoginController {
         }
 
         return "redirect:/login";
+    }
+
+    @GetMapping("/denied")
+    public String accessDenied(@RequestParam(value = "exception", required = false) String exception,
+                               @RequestParam(value = "authorize", required = false) String authorize,
+                               Model model) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        /*
+            이전에 CustomAuthenticationProvider 에서 UsernamePasswordAuthenticationToken 안에
+            principal 을 Account 타입으로 저장했기에, SecurityContextHolder 의 SecurityContext 안의 Authentication 객체에서
+            principal 을 가져올 때도 동일하게 Account 타입으로 형 변환해서 가져온다.
+         */
+        Account account = (Account) authentication.getPrincipal();
+        model.addAttribute("username", account.getUsername());
+        model.addAttribute("exception", exception);
+        model.addAttribute("authorize", authorize);
+
+        return "user/login/denied";
     }
 }

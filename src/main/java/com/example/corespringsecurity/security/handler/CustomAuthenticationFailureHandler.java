@@ -3,6 +3,8 @@ package com.example.corespringsecurity.security.handler;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             errorMessage = "Invalid Username or Password";
         } else if (exception instanceof InsufficientAuthenticationException) {
             errorMessage = "Invalid Secret Key";
+        } else if (exception instanceof UsernameNotFoundException) {
+            errorMessage = "Invalid Username or Password";
         }
 
         super.setDefaultFailureUrl("/login?error=true&exception=" + errorMessage);
