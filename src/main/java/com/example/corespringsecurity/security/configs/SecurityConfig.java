@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -21,8 +22,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import javax.sql.DataSource;
 
 @EnableWebSecurity
-@Slf4j
-@RequiredArgsConstructor
+@Slf4j @RequiredArgsConstructor
+@Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -30,11 +31,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final DataSource dataSource;
     private final FormAuthenticationDetailsSource authenticationDetailsSource;
 
-
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
 
     private final CustomAccessDeniedHandler accessDeniedHandler;
+
 
     @Bean
     public PersistentTokenRepository tokenRepository() {
@@ -43,13 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return tokenRepository;
     }
 
-
-
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
                                                         /* /login 경로 뒤에 *를 붙여 줘야 login 경로에 받는 파라미터 값 인식 가능   */
-                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
+                .antMatchers("/", "/users", "user/login/**", "/login*", "/api/**").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -74,6 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(customUserDetailsService)
                 .tokenRepository(tokenRepository());
 
+//                http.csrf().disable();
     }
 
 

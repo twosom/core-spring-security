@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <div th:fragment="leftmenu(title)">
     <ul class="nav flex-column">
         <li class="nav-item">
             <div style="padding-top:10px;" class="nav flex-column nav-pills" aria-orientation="vertical">
                 <a th:href="@{/}" style="margin:5px;"
                    th:class="${#strings.equals(title, 'home') ? 'nav-link active' : 'nav-link nav-link text-primary' }">대시보드</a>
+
                 <a th:href="@{/mypage}" style="margin:5px;"
                    th:class="${#strings.equals(title, 'my-page') ? 'nav-link active' : 'nav-link nav-link text-primary' }">마이페이지</a>
+
                 <a th:href="@{/messages}" style="margin:5px;"
                    th:class="${#strings.equals(title, 'message') ? 'nav-link active' : 'nav-link nav-link text-primary' }">메시지</a>
+
                 <a th:href="@{/config}" style="margin:5px;"
                    th:class="${#strings.equals(title, 'config') ? 'nav-link active' : 'nav-link nav-link text-primary' }">환경설정</a>
             </div>

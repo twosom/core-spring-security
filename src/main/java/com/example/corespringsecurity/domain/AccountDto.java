@@ -11,9 +11,6 @@ public class AccountDto {
     private String age;
     private Role role;
 
-    private String adminName;
-
-
     public Account toUserEntity() {
         return Account.builder()
                 .username(getUsername())
