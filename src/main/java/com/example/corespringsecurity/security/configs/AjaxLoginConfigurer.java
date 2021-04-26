@@ -1,6 +1,6 @@
 package com.example.corespringsecurity.security.configs;
 
-import com.example.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
+import com.example.corespringsecurity.security.filter.AjaxAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
@@ -11,19 +11,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
-
 
 public class AjaxLoginConfigurer<H extends HttpSecurityBuilder<H>> extends
-        AbstractAuthenticationFilterConfigurer<H, AjaxLoginConfigurer<H>, AjaxLoginProcessingFilter> {
+        AbstractAuthenticationFilterConfigurer<H, AjaxLoginConfigurer<H>, AjaxAuthenticationFilter> {
 
     private AuthenticationManager authenticationManager;
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
-    private AuthenticationFailureHandler authenticationFailureHandler;
+    private AuthenticationSuccessHandler successHandler;
+    private AuthenticationFailureHandler failureHandler;
 
+    private RememberMeServices rememberMeServices;
 
     public AjaxLoginConfigurer() {
-        super(new AjaxLoginProcessingFilter(), null);
+        super(new AjaxAuthenticationFilter(), null);
     }
 
     @Override
@@ -43,31 +42,32 @@ public class AjaxLoginConfigurer<H extends HttpSecurityBuilder<H>> extends
         }
 
         getAuthenticationFilter().setAuthenticationManager(authenticationManager);
-        getAuthenticationFilter().setAuthenticationSuccessHandler(authenticationSuccessHandler);
-        getAuthenticationFilter().setAuthenticationFailureHandler(authenticationFailureHandler);
+        getAuthenticationFilter().setAuthenticationSuccessHandler(successHandler);
+        getAuthenticationFilter().setAuthenticationFailureHandler(failureHandler);
 
-        SessionAuthenticationStrategy sessionAuthenticationStrategy =
-                http.getSharedObject(SessionAuthenticationStrategy.class);
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(SessionAuthenticationStrategy.class);
         if (sessionAuthenticationStrategy != null) {
             getAuthenticationFilter().setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
 
-        RememberMeServices rememberMeServices = http.getSharedObject(RememberMeServices.class);
+        rememberMeServices = http.getSharedObject(RememberMeServices.class);
+
         if (rememberMeServices != null) {
             getAuthenticationFilter().setRememberMeServices(rememberMeServices);
         }
 
-        http.setSharedObject(AjaxLoginProcessingFilter.class, getAuthenticationFilter());
+        http.setSharedObject(AjaxAuthenticationFilter.class, getAuthenticationFilter());
         http.addFilterBefore(getAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
+
     public AjaxLoginConfigurer<H> successHandlerAjax(AuthenticationSuccessHandler successHandler) {
-        this.authenticationSuccessHandler = successHandler;
+        this.successHandler = successHandler;
         return this;
     }
 
     public AjaxLoginConfigurer<H> failureHandlerAjax(AuthenticationFailureHandler failureHandler) {
-        this.authenticationFailureHandler = failureHandler;
+        this.failureHandler = failureHandler;
         return this;
     }
 
@@ -76,5 +76,9 @@ public class AjaxLoginConfigurer<H extends HttpSecurityBuilder<H>> extends
         return this;
     }
 
+    public AjaxLoginConfigurer<H> setRememberMeService(RememberMeServices rememberMeServices) {
+        getAuthenticationFilter().setRememberMeServices(rememberMeServices);
+        return this;
+    }
 
 }

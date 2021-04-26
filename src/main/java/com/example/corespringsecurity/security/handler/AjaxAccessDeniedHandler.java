@@ -1,6 +1,5 @@
 package com.example.corespringsecurity.security.handler;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -17,6 +16,7 @@ public class AjaxAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
+
         String authorize;
 
         switch (request.getRequestURI()) {
@@ -30,8 +30,8 @@ public class AjaxAccessDeniedHandler implements AccessDeniedHandler {
                 authorize = "USER";
                 break;
         }
-        response.addHeader("authorize", authorize);
 
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access is denied");
+        response.setHeader("authorize", authorize);
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "권한이 부족합니다.");
     }
 }

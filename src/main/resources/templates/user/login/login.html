@@ -2,6 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="layout/header::userHead"></head>
 <body>
+
+<meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+<script>
+    function formLogin() {
+        let username = $('#username').val().trim();
+        let password = $('#password').val().trim();
+        let rememberMe = $('#remember-me').prop('checked');
+
+        let csrfHeader = $('#_csrf_header').attr('content');
+        let csrfToken = $('#_csrf').attr('content');
+
+
+        let data = {
+            'username': username,
+            'password': password
+        }
+
+
+
+        $.ajax({
+            type: 'post',
+            url: '/api/login',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('Content-type', 'application-json');
+            },
+            success: function (data) {
+                console.log(data);
+                window.location = '/';
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+                window.location = '/login?error=true&exception=' + xhr.responseText;
+            }
+        });
+    }
+</script>
+
 <div th:replace="layout/top::header"></div>
 <div class="container text-center">
     <div class="login-form d-flex justify-content-center">
@@ -17,16 +60,19 @@
                 <input th:type="hidden" th:value="secret" name="secret_key"/>
 
                 <div class="form-group">
-                    <input type="text" class="form-control" name="username" placeholder="아이디" required autofocus/>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="아이디" required
+                           autofocus/>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" name="password" placeholder="비밀번호" required/>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="비밀번호"
+                           required/>
                 </div>
                 <div class="form-group">
                     remember-me
-                    <input type="checkbox" class="form-control" name="remember-me"/>
+                    <input type="checkbox" class="form-control" name="remember-me" id="remember-me"/>
                 </div>
-                <button type="submit" class="btn btn-lg btn-primary btn-block">로그인</button>
+                <button type="button" onclick="formLogin()" class="btn btn-lg btn-primary btn-block">로그인</button>
+                <!--                <button type="submit" class="btn btn-lg btn-primary btn-block">로그인</button>-->
             </form>
         </div>
     </div>
