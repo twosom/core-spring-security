@@ -11,7 +11,6 @@ public class AccountDto {
     private String age;
     private Role role;
 
-    private Boolean rememberMe;
 
     public Account toUserEntity() {
         return Account.builder()

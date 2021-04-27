@@ -2,9 +2,9 @@ package com.example.corespringsecurity.security.configs;
 
 import com.example.corespringsecurity.provider.CustomAuthenticationProvider;
 import com.example.corespringsecurity.security.common.FormAuthenticationDetailsSource;
-import com.example.corespringsecurity.security.handler.CustomAccessDeniedHandler;
-import com.example.corespringsecurity.security.handler.CustomAuthenticationFailureHandler;
-import com.example.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
+import com.example.corespringsecurity.security.handler.custom.CustomAccessDeniedHandler;
+import com.example.corespringsecurity.security.handler.custom.CustomAuthenticationFailureHandler;
+import com.example.corespringsecurity.security.handler.custom.CustomAuthenticationSuccessHandler;
 import com.example.corespringsecurity.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +22,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import javax.sql.DataSource;
 
 @EnableWebSecurity
-@Slf4j @RequiredArgsConstructor
 @Order(1)
+@Slf4j @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -72,8 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .rememberMeParameter("remember-me")
                 .userDetailsService(customUserDetailsService)
                 .tokenRepository(tokenRepository());
-
-//                http.csrf().disable();
     }
 
 
@@ -91,4 +89,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         auth.authenticationProvider(authenticationProvider);
     }
+
+
 }

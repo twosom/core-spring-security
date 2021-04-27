@@ -21,14 +21,15 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
         AccountContext accountContext = (AccountContext) userDetailsService.loadUserByUsername(username);
-        if (!encoder.matches(password, accountContext.getAccount().getPassword())) {
-            throw new BadCredentialsException("비밀번호가 올바르지 않습니다.");
-        }
 
+        if (!encoder.matches(password, accountContext.getPassword())) {
+            throw new BadCredentialsException("Wrong Password");
+        }
 
         return new AjaxAuthenticationToken(accountContext.getAccount(), null, accountContext.getAuthorities());
     }

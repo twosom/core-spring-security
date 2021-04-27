@@ -10,7 +10,6 @@
     function formLogin() {
         let username = $('#username').val().trim();
         let password = $('#password').val().trim();
-        let rememberMe = $('#remember-me').prop('checked');
 
         let csrfHeader = $('#_csrf_header').attr('content');
         let csrfToken = $('#_csrf').attr('content');

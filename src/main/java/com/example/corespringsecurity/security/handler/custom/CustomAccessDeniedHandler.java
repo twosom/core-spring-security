@@ -1,4 +1,4 @@
-package com.example.corespringsecurity.security.handler;
+package com.example.corespringsecurity.security.handler.custom;
 
 import lombok.Getter;
 import lombok.Setter;

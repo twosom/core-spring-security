@@ -23,13 +23,8 @@ public class MessageController {
     public ResponseEntity<String> apiMessage() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("OK");
+                .body("messages OK");
     }
 
-//	@GetMapping("/api/messages")
-//	@ResponseBody
-//	public String apiMessage() {
-//
-//		return "messages ok";
-//	}
+
 }
