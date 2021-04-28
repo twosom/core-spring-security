@@ -39,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         List<SimpleGrantedAuthority> collect = account.getUserRoles()
                 .stream().map(Role::getRoleName)
-                .collect(Collectors.toSet())
+                .collect(Collectors.toList())
                 .stream().map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 

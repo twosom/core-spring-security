@@ -37,6 +37,9 @@ public class Account implements Serializable {
     private Set<Role> userRoles = new HashSet<>();
 
     public void addRole(Role role) {
+        if (getUserRoles() == null) {
+            this.userRoles = new HashSet<>();
+        }
         getUserRoles().add(role);
     }
 
