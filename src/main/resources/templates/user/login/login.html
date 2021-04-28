@@ -22,14 +22,13 @@
         }
 
 
-
         $.ajax({
             type: 'post',
             url: '/api/login',
             data: JSON.stringify(data),
             dataType: 'json',
             beforeSend: function (xhr) {
-                xhr.setRequestHeader(csrfHeader, csrfToken);
+                // xhr.setRequestHeader(csrfHeader, csrfToken);
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
                 xhr.setRequestHeader('Content-type', 'application-json');
             },
@@ -71,8 +70,8 @@
                     remember-me
                     <input type="checkbox" class="form-control" name="remember-me" id="remember-me"/>
                 </div>
-                <button type="button" onclick="formLogin()" class="btn btn-lg btn-primary btn-block">로그인</button>
-                <!--                <button type="submit" class="btn btn-lg btn-primary btn-block">로그인</button>-->
+                <!--                <button type="button" onclick="formLogin()" class="btn btn-lg btn-primary btn-block">로그인</button>-->
+                <button type="submit" class="btn btn-lg btn-primary btn-block">로그인</button>
             </form>
         </div>
     </div>

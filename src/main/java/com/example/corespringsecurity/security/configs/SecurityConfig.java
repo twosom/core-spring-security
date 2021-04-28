@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -47,33 +48,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                                                        /* /login 경로 뒤에 *를 붙여 줘야 login 경로에 받는 파라미터 값 인식 가능   */
-                .antMatchers("/", "/users", "user/login/**", "/login*", "/api/**").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
-                .anyRequest().authenticated()
-        .and()
-                .formLogin()
+                .antMatchers("/**").permitAll()
+                .anyRequest().authenticated();
+
+        http.formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
                 .authenticationDetailsSource(authenticationDetailsSource)
-                .defaultSuccessUrl("/")
-                /* successHandler 는 defaultSuccessUrl 밑에 있어야 한다. */
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
-                /* 로그인 페이지, 로그인 처리 페이지, 로그인 성공 후 페이지는 permitAll 을 주어서 인증되지 않은 사용자도 접근 허용 */
-                .permitAll()
-        .and()
-                .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler)
-        .and()
-                .rememberMe()
-                .rememberMeParameter("remember-me")
-                .userDetailsService(customUserDetailsService)
-                .tokenRepository(tokenRepository());
+                .permitAll();
 
-//                http.csrf().disable();
+        http.exceptionHandling()
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                .accessDeniedHandler(accessDeniedHandler)
+                .accessDeniedPage("/denied");
+
+//        http.csrf().disable();
     }
 
 
@@ -85,10 +79,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        /* 이미 CustomAuthenticationProvider 에서 사용하고 있으므로 굳이 추가 X */
-//        auth.userDetailsService(customUserDetailsService)
-//                .passwordEncoder(encoder);
-
         auth.authenticationProvider(authenticationProvider);
     }
 }

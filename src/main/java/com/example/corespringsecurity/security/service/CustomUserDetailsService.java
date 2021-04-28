@@ -1,6 +1,7 @@
 package com.example.corespringsecurity.security.service;
 
-import com.example.corespringsecurity.domain.Account;
+import com.example.corespringsecurity.domain.entity.Account;
+import com.example.corespringsecurity.domain.entity.Role;
 import com.example.corespringsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,8 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -21,15 +24,26 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    private final HttpServletRequest request;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다. id = " + username));
 
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(account.getRole().toString()));
+        Account account = userRepository.findByUsername(username);
+        if (account == null) {
+            if (userRepository.countByUsername(username) == 0) {
+                throw new UsernameNotFoundException("No user found with username : " + username);
+            }
+        }
 
-        return new AccountContext(account, roles);
+
+        List<SimpleGrantedAuthority> collect = account.getUserRoles()
+                .stream().map(Role::getRoleName)
+                .collect(Collectors.toSet())
+                .stream().map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        return new AccountContext(account, collect);
     }
 
 }

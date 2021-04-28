@@ -1,4 +1,4 @@
-package com.example.corespringsecurity.domain;
+package com.example.corespringsecurity.domain.entity;
 
 import lombok.Data;
 

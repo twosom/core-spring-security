@@ -34,17 +34,17 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="role" class="col-sm-2 control-label">권한</label>
-                <div class="col-sm-10">
-                    <select name="role" id="role" class="form-control">
-                        <option value="" disabled>권한 선택</option>
-                        <option th:each="role : ${T(com.example.corespringsecurity.domain.Role).values()}"
-                        th:value="${role}" th:text="${role}"></option>
-                    </select>
-<!--                    <input type="text" class="form-control input-large" name="role" id="role" placeholder="권한" required>-->
-                </div>
-            </div>
+<!--            <div class="form-group">-->
+<!--                <label for="role" class="col-sm-2 control-label">권한</label>-->
+<!--                <div class="col-sm-10">-->
+<!--                    <select name="role" id="role" class="form-control">-->
+<!--                        <option value="" disabled>권한 선택</option>-->
+<!--                        <option th:each="role : ${T(com.example.corespringsecurity.domain.Role).values()}"-->
+<!--                        th:value="${role}" th:text="${role}"></option>-->
+<!--                    </select>-->
+<!--&lt;!&ndash;                    <input type="text" class="form-control input-large" name="role" id="role" placeholder="권한" required>&ndash;&gt;-->
+<!--                </div>-->
+<!--            </div>-->
 
             <div class="form-group">
                 <div class="col-sm-offset-1 col-sm-10">
